@@ -97,6 +97,3 @@ documents.db
 * **`documents.db`** is ignored because it’s generated automatically.
 
 ---
-
-If you want, I can **also create a ready-to-use `git commit` setup** with **all these files pre-populated**, so you can directly push it to GitHub.
-
