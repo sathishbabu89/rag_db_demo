@@ -1,0 +1,141 @@
+## **1. Overall Architecture**
+
+The app implements a **Retrieval-Augmented Generation (RAG) pipeline**:
+
+```
+User Input (PDF or manual text)
+          │
+          ▼
+     SQLite Database
+          │
+          ▼
+ Sentence Transformers Embeddings
+          │
+          ▼
+       ChromaDB
+          │
+          ▼
+   Retrieval of Relevant Context
+          │
+          ▼
+   Grok LLM (OpenRouter)
+          │
+          ▼
+     Response in Streamlit Chat
+```
+
+---
+
+## **2. Components**
+
+### **a) SQLite Database**
+
+* Acts as the **source of truth** for all documents.
+* Stores:
+
+  * `id`: unique identifier
+  * `title`: document name
+  * `content`: text of the document
+  * `category` (optional)
+  * `created_at`: timestamp
+* Advantages:
+
+  * Lightweight, persistent storage.
+  * Easy to query or filter metadata later.
+  * Auto-created locally — no external DB server required.
+
+---
+
+### **b) Sentence Transformers (Embeddings)**
+
+* We use **`all-MiniLM-L6-v2`** to convert text into **dense vector representations**.
+* Each document is transformed into a fixed-size **embedding vector**.
+* Embeddings are crucial because **LLMs work better when given semantic vectors for retrieval**.
+* Benefits:
+
+  * Captures semantic meaning of text.
+  * Enables similarity-based search.
+
+---
+
+### **c) ChromaDB (Vector Database)**
+
+* Stores **embeddings** for fast retrieval.
+* Handles **vector similarity search** (cosine similarity) efficiently.
+* Works as the **RAG retrieval engine**:
+
+  * When a user query comes in, ChromaDB returns the **top-k most semantically similar documents**.
+* Advantages:
+
+  * Fast, scalable retrieval.
+  * Separates storage (SQLite) from vector search.
+
+---
+
+### **d) OpenRouter Grok LLM**
+
+* Acts as the **generative model** for question answering.
+* Receives a **prompt that includes retrieved context** from ChromaDB.
+* Produces context-aware answers to user queries.
+* Benefits:
+
+  * Focused, accurate responses using only relevant documents.
+  * Lightweight and free-tier accessible via OpenRouter.
+
+---
+
+### **e) Streamlit UI**
+
+* Provides a **user-friendly web interface**:
+
+  * Upload PDFs or enter text manually.
+  * Ask questions in a chat-style interface.
+  * Displays model responses inline.
+* Maintains **session state** to avoid duplicate document embeddings.
+* Includes **progress bars and notifications** for better UX.
+
+---
+
+## **3. Workflow in Detail**
+
+1. **Document Ingestion**
+
+   * User uploads PDFs or pastes text.
+   * Text is stored in **SQLite**.
+   * Each document is converted to embeddings using **Sentence Transformers**.
+   * Embeddings are stored in **ChromaDB** with a unique ID.
+
+2. **Query Handling**
+
+   * User submits a question in Streamlit chat.
+   * ChromaDB performs **vector similarity search** to retrieve top relevant documents.
+   * Retrieved text forms the **context** for the prompt.
+
+3. **Answer Generation**
+
+   * A prompt is built:
+
+     ```
+     Answer the question based on context below:
+
+     Context: <retrieved_docs>
+     Question: <user_query>
+     ```
+   * This is sent to **Grok LLM**.
+   * LLM generates a **context-aware answer**, which is displayed in chat.
+
+---
+
+## **4. Advantages of This Implementation**
+
+1. **Persistent storage + fast retrieval**: SQLite + ChromaDB combo.
+2. **Semantic search**: Embeddings allow retrieval even if keywords differ from the query.
+3. **RAG paradigm**: The model answers based on relevant documents rather than hallucinating.
+4. **Extensible**:
+
+   * Add more PDFs, text, or relational metadata.
+   * Can integrate OCR for scanned PDFs.
+   * Can migrate SQLite to PostgreSQL for production.
+5. **Easy local development**: No heavy DB servers required.
+
+---
