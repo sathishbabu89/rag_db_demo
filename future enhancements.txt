@@ -1,0 +1,67 @@
+
+### 🔹 **1. Document Handling & Storage**
+
+* **Support multiple formats**: TXT, DOCX, HTML, CSV, Markdown along with PDFs.
+* **Metadata tagging**: Store author, category, keywords, etc. for better filtering.
+* **Vector DB persistence**: Instead of in-memory Chroma, use `PersistentClient` so embeddings survive restarts.
+* **Hybrid storage**: Use SQLite for metadata + Chroma for vectors (already partly done).
+
+---
+
+### 🔹 **2. Chunking & Preprocessing**
+
+* **Semantic chunking**: Instead of fixed sizes, split by paragraphs, headings, or semantic boundaries (e.g., using spaCy or NLTK).
+* **Dynamic chunk size**: Allow users to adjust `chunk_size` and `overlap` in the UI.
+* **Summarization pipeline**: Pre-summarize large chunks to reduce token usage during retrieval.
+
+---
+
+### 🔹 **3. Retrieval Improvements**
+
+* **Hybrid retrieval**: Combine vector similarity (semantic search) with keyword search (BM25).
+* **Re-ranking**: Use an LLM or cross-encoder model to rerank retrieved chunks for higher relevance.
+* **Context window optimization**: Select only the most relevant passages instead of concatenating too much text.
+
+---
+
+### 🔹 **4. LLM Integration**
+
+* **Switchable models**: Add dropdown for OpenRouter models (Claude, LLaMA, GPT-4, Mistral).
+* **Streaming responses**: Stream tokens in real time for better UX.
+* **Cost-aware responses**: Show token usage / cost per query.
+
+---
+
+### 🔹 **5. User Experience**
+
+* **Conversation memory**: Maintain multi-turn conversation context, not just single Q\&A.
+* **Search interface**: Allow users to browse indexed documents and preview retrieved chunks.
+* **Feedback loop**: Let users upvote/downvote answers → retrain or refine ranking.
+* **Downloadable session logs**: Export chat history + context docs for auditing.
+
+---
+
+### 🔹 **6. Deployment & Scalability**
+
+* **Authentication**: Secure app with login (OAuth / JWT).
+* **Dockerization**: Make app portable across machines.
+* **Cloud DB**: Use PostgreSQL + pgvector or a hosted vector DB (Pinecone, Weaviate, Milvus).
+* **Horizontal scaling**: Support multiple users and large datasets.
+
+---
+
+### 🔹 **7. Advanced Features**
+
+* **Agentic workflows**: Let the assistant call tools (e.g., SQL queries against stored docs).
+* **Knowledge graph**: Build entity links across documents for structured reasoning.
+* **Fine-tuned embeddings**: Train embeddings on your domain-specific corpus.
+* **Multi-modal**: Extend beyond text → handle images, scanned PDFs (OCR), audio transcripts.
+
+---
+
+👉 A natural **next step** would be:
+
+* Add **semantic chunking** + **conversation memory**
+* Persist vectors with Chroma’s `PersistentClient`
+* Add **model switcher in sidebar**
+
