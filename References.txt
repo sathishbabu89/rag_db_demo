@@ -1,1 +1,28 @@
 https://www.promptingguide.ai/research/rag 
+That's absolutely fine! We can focus purely on the foundational concepts of **Naive RAG** (or **Simple RAG**).
+
+### Phase 1: The Indexing Pipeline (Preparation)
+
+This phase occurs once to prepare the knowledge base.
+
+| Your Step | Naive RAG Technical Terminology | Explanation |
+| :--- | :--- | :--- |
+| User uploads a PDF document into the chatbot app. | **Corpus Loading** | The PDF is loaded into the system to form the **Corpus** or **Knowledge Base**. |
+| The PDF document will be splitted into chunks. | **Document Chunking** | The document is segmented into fixed-size portions of text, often with a small **Overlap** to maintain context continuity. |
+| Then the chunks will be passed to embeddings to convert them into vectors. | **Embedding Generation** | An **Embedding Model** (e.g., a Sentence Transformer) is used to transform each text chunk into a dense numerical array called a **Vector Embedding**. |
+| The vectors are then stored into vector dbs like chroma db/FAISS. | **Vector Indexing** and **Storage** | The vector embeddings are stored in a **Vector Database** (like ChromaDB or FAISS), which efficiently organizes them into a **Vector Index** for fast similarity search. |
+
+***
+
+### Phase 2: The Query Pipeline (Inference)
+
+This phase executes every time a user asks a question.
+
+| Your Step | Naive RAG Technical Terminology | Explanation |
+| :--- | :--- | :--- |
+| The user asks query into the chatbot. | **User Query** (or **Prompt**) | The natural language question provided by the user. |
+| That query will also be converted into vector embeddings. | **Query Embedding** | The *same* **Embedding Model** from the Indexing phase is used to convert the user's query into a **Query Vector**. |
+| So next, using llm to map the nearest matches with document vectors and query vectors... | **Vector Similarity Search** or **Dense Retrieval** | The **Query Vector** is used to perform a search in the **Vector Index** to find the **top-k** most similar (closest) document vectors. The corresponding text chunks are the **Retrieved Context**. |
+| ...and then returned to user as an answer in the NLP. | **Prompt Augmentation** and **Generation** | The **Retrieved Context** and the original **User Query** are concatenated together to create a final, comprehensive **RAG Prompt**. This prompt is sent to the **Large Language Model (LLM)**, which generates a grounded, natural language (**NLP**) answer. |
+
+This refined breakdown captures the essential, linear, and unoptimized flow of the simplest RAG implementation.
